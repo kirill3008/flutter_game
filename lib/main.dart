@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dropbox_client/dropbox_client.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:async';
-import 'dart:io';
+//import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:dropbox_client/dropbox_client.dart';
+//import 'package:path_provider/path_provider.dart';
+//import 'dart:async';
+//import 'dart:io';
 
 const String dropboxClientId = 'boo';
 const String dropboxKey = 's4but2m7b5dt9zf';
@@ -56,19 +56,9 @@ class MainMenu extends StatelessWidget {
 }
 
 class Snake extends StatefulWidget {
-  List<List<int>> map = [
-    [2, 1, 1, 1, 1],
-    [0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1],
-  ];
-  int curField;
-  List<List<int>> idToFild = [
+  final List<List<int>> map;
+  final int curField;
+  final List<List<int>> idToFild = [
     [0, 0],
     [0, 1],
     [0, 2],
@@ -99,7 +89,20 @@ class Snake extends StatefulWidget {
     [8, 3],
     [8, 4],
   ];
-  Snake({super.key, this.map = const [], this.curField = 0});
+  Snake(
+      {super.key,
+      this.map = const [
+        [2, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1],
+      ],
+      this.curField = 0});
 
   @override
   State<Snake> createState() => _SnakeState();
@@ -123,7 +126,7 @@ class _SnakeState extends State<Snake> {
               color: Colors.white,
             )),
             Text(
-              "${i} ${j}",
+              "$i $j",
             ),
             Container(
                 decoration: BoxDecoration(
