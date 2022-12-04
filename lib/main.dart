@@ -20,6 +20,31 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Map<int, List<List<int>>> map = {
+      0: [
+        [1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0],
+        [1, 1, 2, 1, 1],
+        [0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1],
+      ],
+      1: [
+        [2, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1],
+      ],
+    };
+
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     return MaterialApp(
       title: 'My App',
@@ -29,7 +54,14 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const MainMenu(),
-        '/firstpage': (context) => const Page(),
+        '/page1': (context) => Page(
+            map1: map[0] as List<List<int>>,
+            map2: map[1] as List<List<int>>,
+            nextPage: "/page2"),
+        '/page2': (context) => Page(
+            map1: map[1] as List<List<int>>,
+            map2: map[0] as List<List<int>>,
+            nextPage: "/page1"),
       },
     );
   }
@@ -46,7 +78,7 @@ class MainMenu extends StatelessWidget {
         Expanded(
             child: TextButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/firstpage');
+            Navigator.pushNamed(context, '/page1');
           },
           child: const Text("Next page"),
         ))
@@ -89,20 +121,7 @@ class Snake extends StatefulWidget {
     [8, 3],
     [8, 4],
   ];
-  Snake(
-      {super.key,
-      this.map = const [
-        [2, 1, 1, 1, 1],
-        [0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 0],
-        [1, 1, 1, 1, 1],
-        [0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 0],
-        [1, 1, 1, 1, 1],
-      ],
-      this.curField = 0});
+  Snake({super.key, this.map = const [], this.curField = 0});
 
   @override
   State<Snake> createState() => _SnakeState();
@@ -150,61 +169,71 @@ class _SnakeState extends State<Snake> {
 }
 
 class Page extends StatefulWidget {
-  const Page({Key? key}) : super(key: key);
+  final List<List<int>> map1;
+  final List<List<int>> map2;
+  final String nextPage;
+
+  const Page(
+      {super.key,
+      this.map1 = const [],
+      this.map2 = const [],
+      this.nextPage = "/"});
 
   @override
   State<Page> createState() => _PageState();
 }
 
 class _PageState extends State<Page> {
-  int curField = 0;
-  var map = [
-    [2, 1, 1, 1, 1],
-    [0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1],
-  ];
+  int curField1 = 0;
+  int curField2 = 0;
   @override
   Widget build(BuildContext context) {
-    var snake = Snake(
-      map: map,
-      curField: curField,
+    var snake1 = Snake(
+      map: widget.map1,
+      curField: curField1,
+    );
+    var snake2 = Snake(
+      map: widget.map2,
+      curField: curField2,
     );
     return Scaffold(
       backgroundColor: Colors.brown,
       body: Center(
           child: Row(
         children: [
-          const Expanded(
-            child: Text(
-              "Защита окружающей среды, рекреация, сохранение ландшафтов, экологически чистая энергетика, биотехнология, гуманизация производства",
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Expanded(child: snake),
-          const Expanded(
-            child: Text(
-              "X3",
-              textAlign: TextAlign.center,
-              textScaleFactor: 2,
-            ),
-          ),
+          Expanded(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                const Text(
+                  "Защита окружающей среды, рекреация, сохранение ландшафтов, экологически чистая энергетика, биотехнология, гуманизация производства",
+                  textAlign: TextAlign.center,
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, widget.nextPage);
+                    },
+                    child: const Text("Xyu"))
+              ])),
+          const SizedBox(width: 20),
+          Expanded(child: snake1),
+          const SizedBox(width: 20),
+          Expanded(child: snake2),
         ],
       )),
+      /*
       floatingActionButton: FloatingActionButton(onPressed: () {
         setState(() {
-          if (curField + 1 < snake.idToFild.length) {
-            map[snake.idToFild[curField][0]][snake.idToFild[curField][1]] = 1;
-            curField += 1;
-            map[snake.idToFild[curField][0]][snake.idToFild[curField][1]] = 2;
+          if (curField1 + 1 < snake1.idToFild.length) {
+            widget.map1[snake1.idToFild[curField1][0]]
+                [snake1.idToFild[curField1][1]] = 1;
+            curField1 += 1;
+            widget.map1[snake1.idToFild[curField1][0]]
+                [snake1.idToFild[curField1][1]] = 2;
           }
         });
       }),
+      */
     );
   }
 }
