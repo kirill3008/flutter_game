@@ -99,7 +99,7 @@ class Snake extends StatefulWidget {
     [8, 3],
     [8, 4],
   ];
-  Snake({super.key, this.curField = 0});
+  Snake({super.key, this.map = const [], this.curField = 0});
 
   @override
   State<Snake> createState() => _SnakeState();
@@ -169,6 +169,7 @@ class _PageState extends State<Page> {
   @override
   Widget build(BuildContext context) {
     var snake = Snake(
+      map: map,
       curField: curField,
     );
     return Scaffold(
@@ -195,11 +196,9 @@ class _PageState extends State<Page> {
       floatingActionButton: FloatingActionButton(onPressed: () {
         setState(() {
           if (curField + 1 < snake.idToFild.length) {
-            snake.map[snake.idToFild[curField][0]]
-                [snake.idToFild[curField][1]] = 1;
+            map[snake.idToFild[curField][0]][snake.idToFild[curField][1]] = 1;
             curField += 1;
-            snake.map[snake.idToFild[curField][0]]
-                [snake.idToFild[curField][1]] = 2;
+            map[snake.idToFild[curField][0]][snake.idToFild[curField][1]] = 2;
           }
         });
       }),
