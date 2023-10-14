@@ -4,15 +4,14 @@
 //import 'dart:async';
 //import 'dart:io';
 
-const String dropboxClientId = 'boo';
-const String dropboxKey = 's4but2m7b5dt9zf';
-const String dropboxSecret = 'qcuogyb0l451z72';
+
 
 
 
 
 
 /*
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
@@ -126,5 +125,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-*/
 
+
+*/

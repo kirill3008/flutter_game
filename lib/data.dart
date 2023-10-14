@@ -285,3 +285,7 @@ const policy = [
   [36, 3],
   [37, 3],
 ];
+const String dropboxKey = 's4but2m7b5dt9zf';
+const String dropboxSecret = 'qcuogyb0l451z72';
+const String dropboxRefresh = 'UnU-PbXo9w8AAAAAAAAAAa8R8ueWvAPfl9c2LBW4-krUNaU9VFg0riA-BM8MM-0U';
+const String dropboxClientId = 'boo';

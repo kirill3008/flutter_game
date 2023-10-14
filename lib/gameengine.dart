@@ -1,8 +1,17 @@
+import 'dart:ffi';
+
 import 'data.dart' as data;
 import 'dart:math';
+import 'package:path_provider/path_provider.dart';
+import 'package:dropbox_client/dropbox_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class GameController extends Object {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   int gameState = 0;
+  int budget = 10;
   bool choice = true;
   bool gameOver = false;
   List<List<int>> enviroment = data.enviroment;
@@ -66,7 +75,35 @@ class GameController extends Object {
       "population": population,
       "policy": policy
     };
+    Future<bool> status = initDropbox();
   }
+
+  Future<bool> initDropbox() async {
+    await Dropbox.init(data.dropboxClientId, data.dropboxKey, data.dropboxSecret);
+    final SharedPreferences prefs = await _prefs;
+    String? accessToken = prefs.getString('ecopoly_token');
+    var result = [];
+    if (accessToken != null) {
+      await Dropbox.authorizeWithAccessToken(accessToken);
+      result = await Dropbox.listFolder('');
+    }
+    if (accessToken == null || result.isEmpty) {
+      var auth = 'Basic ${base64Encode(utf8.encode("${data.dropboxKey}:${data.dropboxSecret}"))}';
+      var httpPost = await http.post(Uri.parse("https://api.dropbox.com/oauth2/token"),
+          headers: {"authorization": auth},
+          body: {"grant_type": "refresh_token", "refresh_token": data.dropboxRefresh});
+      var jsonPostResponse = jsonDecode(httpPost.body);
+      accessToken = jsonPostResponse["access_token"]!;
+      await Dropbox.authorizeWithAccessToken(accessToken!);
+    }
+    await Dropbox.authorizeWithAccessToken(accessToken);
+    result = await Dropbox.listFolder('');
+    if (result.isEmpty) {
+      return false;
+    }
+    return true;
+  }
+
   List<List<int>> generateMap(String name, int side) {
     if (snakeSize[name] == null) {
       return [];
@@ -190,6 +227,7 @@ class GameController extends Object {
       case 3:
         {
           onScreen = ["production", "production"];
+          prevPos["production"] = currentPos["production"]!;
           currentPos["production"] =
               min(currentPos["production"]! + tosnake["production"]![currentPos["production"]!][0], 28);
         }
@@ -198,6 +236,7 @@ class GameController extends Object {
       case 4:
         {
           onScreen = ["production", "damage"];
+          prevPos["damage"] = currentPos["damage"]!;
           currentPos["damage"] = min(currentPos["damage"]! + tosnake["production"]![currentPos["production"]!][2], 28);
         }
         break;
@@ -205,6 +244,7 @@ class GameController extends Object {
       case 5:
         {
           onScreen = ["damage", "damage"];
+          prevPos["damage"] = currentPos["damage"]!;
           currentPos["damage"] = max(currentPos["damage"]! - tosnake["damage"]![currentPos["damage"]!][0], 0);
         }
         break;
@@ -212,6 +252,7 @@ class GameController extends Object {
       case 6:
         {
           onScreen = ["damage", "qualityoflife"];
+          prevPos["qualityoflife"] = currentPos["qualityoflife"]!;
           currentPos["qualityoflife"] =
               max(currentPos["qualityoflife"]! - tosnake["damage"]![currentPos["damage"]!][1], 0);
         }
@@ -220,6 +261,7 @@ class GameController extends Object {
       case 7:
         {
           onScreen = ["education", "education"];
+          prevPos["education"] = currentPos["education"]!;
           currentPos["education"] =
               max(currentPos["education"]! - tosnake["education"]![currentPos["education"]!][1], 0);
         }
@@ -228,6 +270,7 @@ class GameController extends Object {
       case 8:
         {
           onScreen = ["education", "qualityoflife"];
+          prevPos["qualityoflife"] = currentPos["qualityoflife"]!;
           currentPos["qualityoflife"] =
               min(max(currentPos["qualityoflife"]! - tosnake["education"]![currentPos["education"]!][2], 0), 28);
         }
@@ -236,6 +279,7 @@ class GameController extends Object {
       case 9:
         {
           onScreen = ["education", "populationadd"];
+          prevPos["populationadd"] = currentPos["populationadd"]!;
           if (choice) {
             currentPos["populationadd"] =
                 min(max(currentPos["populationadd"]! + tosnake["education"]![currentPos["education"]!][1], 0), 28);
@@ -249,6 +293,7 @@ class GameController extends Object {
       case 10:
         {
           onScreen = ["qualityoflife", "qualityoflife"];
+          prevPos["qualityoflife"] = currentPos["qualityoflife"]!;
           currentPos["qualityoflife"] = min(
               max(currentPos["qualityoflife"]! + tosnake["qualityoflife"]![currentPos["qualityoflife"]!][0], 0), 28);
         }
@@ -257,6 +302,7 @@ class GameController extends Object {
       case 11:
         {
           onScreen = ["qualityoflife", "populationadd"];
+          prevPos["populationadd"] = currentPos["populationadd"]!;
           currentPos["populationadd"] = min(
               max(currentPos["populationadd"]! + tosnake["qualityoflife"]![currentPos["qualityoflife"]!][1], 0), 28);
         }
@@ -265,6 +311,7 @@ class GameController extends Object {
       case 12:
         {
           onScreen = ["populationadd", "population"];
+          prevPos["population"] = currentPos["population"]!;
           currentPos["population"] = min(
               max(
                   currentPos["populationadd"]! +
@@ -278,6 +325,7 @@ class GameController extends Object {
       case 13:
         {
           onScreen = ["population", "qualityoflife"];
+          prevPos["qualityoflife"] = currentPos["qualityoflife"]!;
           currentPos["qualityoflife"] =
               min(max(currentPos["qualityoflife"]! + tosnake["population"]![currentPos["population"]!][2], 0), 28);
         }
@@ -286,9 +334,14 @@ class GameController extends Object {
       case 14:
         {
           onScreen = ["qualityoflife", "policy"];
+          prevPos["policy"] = currentPos["policy"]!;
           currentPos["policy"] =
               min(max(currentPos["policy"]! + tosnake["qualityoflife"]![currentPos["qualityoflife"]!][2], 0), 47);
         }
+        budget += (tosnake["production"]![currentPos["production"]!][1] +
+            tosnake["population"]![currentPos["population"]!][1] +
+            tosnake["qualityoflife"]![currentPos["qualityoflife"]!][3] +
+            tosnake["policy"]![currentPos["policy"]!][1]);
         break;
       //something went wrong, shouldn't be here
       default:
@@ -296,7 +349,7 @@ class GameController extends Object {
         break;
     }
     if (currentPos["policy"] == 0) {
-      //gameOver = true;
+      gameOver = true;
     }
   }
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'gameengine.dart';
+import 'dart:math';
+import 'data.dart' as data;
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -292,9 +295,15 @@ class BallanceIncome extends StatefulWidget {
 }
 
 class _BallanceIncomeState extends State<BallanceIncome> {
+  int enviroment = 0;
+  int production = 0;
+  int education = 0;
+  int life = 0;
+  int population = 0;
+  int of = 0;
   @override
   Widget build(BuildContext context) {
-    int a = 0;
+    int budget = widget.gm.budget;
     return Scaffold(
         backgroundColor: Colors.brown,
         body: Center(
@@ -308,137 +317,223 @@ class _BallanceIncomeState extends State<BallanceIncome> {
               Expanded(
                   child: Row(children: [
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a += 1;
-                  },
+                  onPressed: ((enviroment == 0)
+                      ? null
+                      : () {
+                          setState(() {
+                            enviroment -= 1;
+                            of -= 1;
+                          });
+                        }),
+                  child: const Text("-1"),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
-                const Text(
-                  "production",
+                Text(
+                  "Охрана среды: $enviroment",
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a -= 1;
-                  },
+                  onPressed: ((of >= budget)
+                      ? null
+                      : () {
+                          setState(() {
+                            enviroment += 1;
+                            of += 1;
+                          });
+                        }),
+                  child: const Text("+1"),
                 ),
               ])),
               Expanded(
                   child: Row(children: [
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a += 1;
-                  },
+                  onPressed: ((production == 0)
+                      ? null
+                      : () {
+                          setState(() {
+                            production -= 1;
+                            of -= 1;
+                          });
+                        }),
+                  child: const Text("-1"),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
-                const Text(
-                  "production",
+                Text(
+                  "Производство $production",
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a -= 1;
-                  },
+                  onPressed: ((of >= budget)
+                      ? null
+                      : () {
+                          setState(() {
+                            production += 1;
+                            of += 1;
+                          });
+                        }),
+                  child: const Text("+1"),
                 ),
               ])),
               Expanded(
                   child: Row(children: [
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a += 1;
-                  },
+                  onPressed: ((education == 0)
+                      ? null
+                      : () {
+                          setState(() {
+                            education -= 1;
+                            of -= 1;
+                          });
+                        }),
+                  child: const Text("-1"),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
-                const Text(
-                  "production",
+                Text(
+                  "Просвещение: $education",
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a -= 1;
-                  },
+                  onPressed: ((of >= budget)
+                      ? null
+                      : () {
+                          setState(() {
+                            education += 1;
+                            of += 1;
+                          });
+                        }),
+                  child: const Text("+1"),
                 ),
               ])),
               Expanded(
                   child: Row(children: [
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a += 1;
-                  },
+                  onPressed: ((life == 0)
+                      ? null
+                      : () {
+                          setState(() {
+                            life -= 1;
+                            of -= 1;
+                          });
+                        }),
+                  child: const Text("-1"),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
-                const Text(
-                  "production",
+                Text(
+                  "Качество жизни: $life",
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a -= 1;
-                  },
+                  onPressed: ((of >= budget)
+                      ? null
+                      : () {
+                          setState(() {
+                            life += 1;
+                            of += 1;
+                          });
+                        }),
+                  child: const Text("+1"),
                 ),
               ])),
               Expanded(
                   child: Row(children: [
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a += 1;
-                  },
+                  onPressed: ((population == 0)
+                      ? null
+                      : () {
+                          setState(() {
+                            population -= 1;
+                            of -= 1;
+                          });
+                        }),
+                  child: const Text("-1"),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
-                const Text(
-                  "production",
+                Text(
+                  "Население: $population",
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 ElevatedButton(
-                  child: const Text("dec"),
-                  onPressed: () {
-                    a -= 1;
-                  },
+                  onPressed: ((of >= budget)
+                      ? null
+                      : () {
+                          setState(() {
+                            population += 1;
+                            of += 1;
+                          });
+                        }),
+                  child: const Text("+1"),
                 ),
               ])),
             ],
           )),
-          ElevatedButton(
+          Expanded(
+              child: Column(children: [
+            const SizedBox(
+              height: 40,
+            ),
+            Text(
+              "Бюджет  $of / $budget",
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(
+              height: 200,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  widget.gm.currentPos["qualityoflife"] = min(widget.gm.currentPos["qualityoflife"]! + life, 28);
+                  widget.gm.currentPos["population"] = min(widget.gm.currentPos["population"]! + population, 47);
+                  widget.gm.currentPos["education"] = min(widget.gm.currentPos["education"]! + education, 28);
+                  widget.gm.currentPos["production"] = min(widget.gm.currentPos["production"]! + production, 28);
+                  widget.gm.currentPos["enviroment"] = min(widget.gm.currentPos["enviroment"]! + enviroment, 28);
+                  widget.gm.prevPos["qualityoflife"] = min(widget.gm.prevPos["qualityoflife"]! + life, 28);
+                  widget.gm.prevPos["population"] = min(widget.gm.prevPos["population"]! + population, 47);
+                  widget.gm.prevPos["education"] = min(widget.gm.prevPos["education"]! + education, 28);
+                  widget.gm.prevPos["production"] = min(widget.gm.prevPos["production"]! + production, 28);
+                  widget.gm.prevPos["enviroment"] = min(widget.gm.prevPos["enviroment"]! + enviroment, 28);
+                  widget.gm.budget -= of;
+                  of = 0;
+                  life = 0;
+                  population = 0;
+                  education = 0;
+                  production = 0;
+                  enviroment = 0;
+                  widget.gm.gameState += 1;
+                  widget.gm.makeMove();
+                  Navigator.pushNamed(context, "/page");
+                },
+                child: const Text("Подтвердить")),
+            ElevatedButton(
               onPressed: () {
-                widget.gm.gameState += 1;
-                widget.gm.makeMove();
                 Navigator.pushNamed(context, "/page");
               },
-              child: const Text("Confirm")),
+              child: const Text("Обзор"),
+            )
+          ])),
           const SizedBox(
             width: 20,
           )
