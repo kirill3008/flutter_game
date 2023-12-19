@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'data.dart' as data;
 import 'dart:math';
 import 'package:path_provider/path_provider.dart';
@@ -7,6 +5,7 @@ import 'package:dropbox_client/dropbox_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
 
 class GameController extends Object {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -14,6 +13,7 @@ class GameController extends Object {
   int budget = 10;
   bool choice = true;
   bool gameOver = false;
+  String log = "life,population,education,production,enviroment\n";
   List<List<int>> enviroment = data.enviroment;
   List<List<int>> production = data.production;
   List<List<int>> damage = data.damage;
@@ -198,6 +198,33 @@ class GameController extends Object {
     return ans;
   }
 
+  void restart() {
+    gameState = 0;
+    budget = 10;
+    choice = true;
+    gameOver = false;
+    currentPos = {
+      "enviroment": 0,
+      "production": 11,
+      "damage": 12,
+      "education": 7,
+      "qualityoflife": 9,
+      "populationadd": 19,
+      "population": 20,
+      "policy": 10
+    };
+    prevPos = {
+      "enviroment": 0,
+      "production": 11,
+      "damage": 12,
+      "education": 7,
+      "qualityoflife": 9,
+      "populationadd": 19,
+      "population": 20,
+      "policy": 10
+    };
+  }
+
   void makeMove() {
     switch (gameState) {
       //принимайте решение
@@ -342,14 +369,23 @@ class GameController extends Object {
             tosnake["population"]![currentPos["population"]!][1] +
             tosnake["qualityoflife"]![currentPos["qualityoflife"]!][3] +
             tosnake["policy"]![currentPos["policy"]!][1]);
+        if (currentPos["policy"] == 0 || budget < 0) {
+          gameOver = true;
+          _upload();
+        }
         break;
       //something went wrong, shouldn't be here
       default:
         {}
         break;
     }
-    if (currentPos["policy"] == 0) {
-      gameOver = true;
-    }
+  }
+
+  Future<void> _upload() async {
+    var tempDir = await getTemporaryDirectory();
+    var filepath = '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.csv';
+    File(filepath).writeAsStringSync(log);
+    log = "life,population,education,production,enviroment\n";
+    await Dropbox.upload(filepath, '/${DateTime.now().millisecondsSinceEpoch}.csv');
   }
 }

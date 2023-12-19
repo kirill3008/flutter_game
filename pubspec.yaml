@@ -33,6 +33,7 @@ dependencies:
   path_provider:
   dropbox_client:
   shared_preferences:
+  http:
 
 
   # The following adds the Cupertino Icons font to your application.

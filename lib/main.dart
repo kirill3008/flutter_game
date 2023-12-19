@@ -266,11 +266,13 @@ class _PageState extends State<Page> {
                       widget.gm.gameState += 1;
                       widget.gm.gameState %= 15;
                       widget.gm.makeMove();
-                      if (widget.gm.gameOver) {
-                        Navigator.pushNamed(context, "/");
-                      }
                       if (widget.gm.gameState == 0) {
-                        Navigator.pushNamed(context, "/selecter");
+                        if (widget.gm.gameOver) {
+                          widget.gm.restart();
+                          Navigator.pushNamed(context, "/");
+                        } else {
+                          Navigator.pushNamed(context, "/selecter");
+                        }
                       }
                       setState(() {});
                     },
@@ -515,6 +517,7 @@ class _BallanceIncomeState extends State<BallanceIncome> {
                   widget.gm.prevPos["education"] = min(widget.gm.prevPos["education"]! + education, 28);
                   widget.gm.prevPos["production"] = min(widget.gm.prevPos["production"]! + production, 28);
                   widget.gm.prevPos["enviroment"] = min(widget.gm.prevPos["enviroment"]! + enviroment, 28);
+                  widget.gm.log += "$life,$population,$education,$production,$enviroment\n";
                   widget.gm.budget -= of;
                   of = 0;
                   life = 0;
